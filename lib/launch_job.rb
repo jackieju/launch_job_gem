@@ -2,17 +2,17 @@
 # Author: Jackie.ju@gmail.com
 
 # launch a job with a function, interval
-# sometime job need run very freqently and log cost too much compared with running time, in this case should set needlog=false
+# sometime job need run very freqently and log cost too much compared with running time, in this case should set log=false
 require 'rubygems'
 require 'ps_grep'
 
 def launch_job_with_hash(hash)
     # symbolize
     hash = hash.inject({}){|m,(k,v)| m[k.to_sym] = v; m}    
-    launch_job(hash[:fn], hash[:ms], hash[:needlog], hash[:before], hash[:error], 
-        hash[:unique], hash[:max_error], hash[:name])
+    launch_job(hash[:fn], hash[:ms], hash[:log], hash[:before], hash[:error], 
+        hash[:unique], hash[:max_error], hash[:name], hash[:debug])
 end
-def launch_job(fn, ms=nil, needlog=true, fn_before_launch=nil, error_handler=nil, unique=false, max_error=nil, name=nil)
+def launch_job(fn, ms=nil, log=true, fn_before_launch=nil, error_handler=nil, unique=false, max_error=nil, name=nil, debug=nil)
     if fn.class == Hash
         return launch_job_with_hash(fn)
     end
@@ -54,7 +54,7 @@ def launch_job(fn, ms=nil, needlog=true, fn_before_launch=nil, error_handler=nil
            
            while(1)
                tf_start = Time.now.to_f
-               if needlog
+               if log
                    _tm = Time.now
                    if _tm.to_i - tm.to_i > 600
                         p "[#{_tm}]I'm running.(count=#{count}, err #{errcount})"
@@ -91,10 +91,12 @@ def launch_job(fn, ms=nil, needlog=true, fn_before_launch=nil, error_handler=nil
                
                int = ms.to_f - (Time.now.to_f - tf_start)
                int = 0.001 if int <= 0
-               p "sleep #{int}" if needlog
+               
+               p "sleep #{int}" if debug
+               
                sleep(int)
                
-               p "after sleep"
+               # p "after sleep" if needlog
            end
        }
 
