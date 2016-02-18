@@ -6,13 +6,13 @@
 require 'rubygems'
 require 'ps_grep'
 
-def launch_job_with_hash(hash)
+def launch_job_with_hash(hash, *p)
     # symbolize
     hash = hash.inject({}){|m,(k,v)| m[k.to_sym] = v; m}    
     launch_job(hash[:fn], hash[:ms], hash[:log], hash[:before], hash[:error], 
-        hash[:unique], hash[:max_error], hash[:name], hash[:debug])
+        hash[:unique], hash[:max_error], hash[:name], hash[:debug], *p)
 end
-def launch_job(fn, ms=nil, log=true, fn_before_launch=nil, error_handler=nil, unique=false, max_error=nil, name=nil, debug=nil)
+def launch_job(fn, ms=nil, log=true, fn_before_launch=nil, error_handler=nil, unique=false, max_error=nil, name=nil, debug=nil, *p)
     if fn.class == Hash
         return launch_job_with_hash(fn)
     end
@@ -64,7 +64,7 @@ def launch_job(fn, ms=nil, log=true, fn_before_launch=nil, error_handler=nil, un
                
                begin
 
-                   Object.send(fn.to_s)
+                   Object.send(fn.to_s, *p)
 
                rescue Exception=>e
 
